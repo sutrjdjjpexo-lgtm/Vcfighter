@@ -27,7 +27,7 @@ if not hasattr(pyrogram_errors, "GroupcallInvalid"):
             pass
         pyrogram_errors.GroupcallInvalid = GroupcallInvalid
 
-from config import API_HASH, API_ID, CONTROL_GROUP_ID, SESSION_NAME, SESSION_STRING
+from config import API_HASH, API_ID, SESSION_NAME, SESSION_STRING
 from relay.commands import register
 
 if SESSION_STRING:
@@ -40,13 +40,7 @@ register(app)
 async def startup():
     await app.start()
     print("🔊 VC Fighter started", flush=True)
-    try:
-        await app.send_message(
-            CONTROL_GROUP_ID,
-            "🟢 **VC Fighter started**\nUse `/help` for commands.\n\nFlow: `/join <group_id>` → reply to audio → `/fight`",
-        )
-    except Exception as exc:
-        print(f"Startup notification failed: {type(exc).__name__}: {exc}", flush=True)
+    # No fixed CONTROL_GROUP_ID is required. Commands are handled dynamically.
     await idle()
     await app.stop()
 
