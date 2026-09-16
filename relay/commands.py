@@ -24,9 +24,9 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 
 def _allowed():
-    # No fixed control group: commands can be issued from private chat
-    # or any group where the account is present.
-    return filters.private | filters.group
+    # This project uses a Pyrogram user session. Accept commands sent to the
+    # account from other chats AND commands typed by the session account itself.
+    return (filters.private | filters.group) & (filters.incoming | filters.outgoing)
 
 
 def _help_text():
