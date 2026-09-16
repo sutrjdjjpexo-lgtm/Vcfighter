@@ -7,7 +7,6 @@ import uuid
 from pyrogram import filters
 from pyrogram.types import Message
 
-from config import CONTROL_GROUP_ID
 from relay import state
 from relay.vc_bridge import VCBridge
 
@@ -25,7 +24,9 @@ os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 
 def _allowed():
-    return filters.private | filters.chat(CONTROL_GROUP_ID)
+    # No fixed control group: commands can be issued from private chat
+    # or any group where the account is present.
+    return filters.private | filters.group
 
 
 def _help_text():
