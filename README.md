@@ -8,16 +8,16 @@
 4. `/fightstop` stops the audio but keeps the account in VC.
 5. `/leave` stops everything and leaves VC.
 
-The bot also sends a startup message to `CONTROL_GROUP_ID`. `/ping`, `/help`, `/status` work in private chat and the configured control group.
+The bot also sends a startup message to `CONTROL_GROUP_ID (not required)`. `/ping`, `/help`, `/status` work in private chat and the configured control group.
 
 ## Railway variables
 
 - `API_ID`
 - `API_HASH`
 - `SESSION_STRING`
-- `CONTROL_GROUP_ID`
+- `CONTROL_GROUP_ID (not required)`
 
-`CONTROL_GROUP_ID` is only used for the startup notification and command access. The actual VC target is supplied with `/join`.
+`CONTROL_GROUP_ID (not required)` is only used for the startup notification and command access. The actual VC target is supplied with `/join`.
 
 ## Commands
 
@@ -44,3 +44,7 @@ Commands:
 
 Optional Railway variable:
 - `REACTION_INTERVAL=3600` (seconds; default 1 hour)
+
+
+### Important
+This project uses `SESSION_STRING` and therefore commands are handled by the Telegram account represented by that session. It is not controlled by a BotFather `BOT_TOKEN`. Commands now accept both incoming and outgoing messages, including commands typed by the session account in groups/private chats.
