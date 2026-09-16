@@ -1,19 +1,46 @@
-# VC Relay Bot (Advanced)
+# VCFighter — Railway VC Fight Player
 
-Private VC relay (bridge) bot.
-Control group VC → Target group VC with volume control.
+## What it does
 
-## Commands (Control Group)
-/connect <target_group_id>
-/volume <0-300>
-/stop
+1. `/join <group_id>` → user account joins/gets ready for that group's active Voice Chat.
+2. Reply to a Telegram audio/voice message and send `/fight`.
+3. The replied audio is downloaded and repeatedly played into the joined VC.
+4. `/fightstop` stops the audio but keeps the account in VC.
+5. `/leave` stops everything and leaves VC.
 
-## Requirements
-- Python 3.9+
-- ffmpeg
-- User account (Pyrogram session)
+The bot also sends a startup message to `CONTROL_GROUP_ID`. `/ping`, `/help`, `/status` work in private chat and the configured control group.
 
-## Run
-sudo apt install ffmpeg -y
-pip install -r requirements.txt
-python main.py
+## Railway variables
+
+- `API_ID`
+- `API_HASH`
+- `SESSION_STRING`
+- `CONTROL_GROUP_ID`
+
+`CONTROL_GROUP_ID` is only used for the startup notification and command access. The actual VC target is supplied with `/join`.
+
+## Commands
+
+- `/join -1001234567890`
+- `/fight` — reply to audio/voice
+- `/fightstop`
+- `/status`
+- `/leave`
+- `/ping`
+- `/help`
+
+Do not commit Telegram credentials or session strings to GitHub.
+
+
+## Automatic reactions
+
+After a group is registered with `/join <group_id>`, the client watches incoming
+messages in that group. For each active user, the latest message can receive one
+random reaction (`🌚 😂 😅 😭 😘 ♥️`) after one hour.
+
+Commands:
+- `/reaction on`
+- `/reaction off`
+
+Optional Railway variable:
+- `REACTION_INTERVAL=3600` (seconds; default 1 hour)
