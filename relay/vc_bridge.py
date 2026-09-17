@@ -13,6 +13,9 @@ class VCBridge:
     """Manage multiple Telegram voice chats with one PyTgCalls client."""
 
     def __init__(self, app):
+        # Keep the original Pyrogram client separately. PyTgCalls does not
+        # expose it as `.app` in the installed API version.
+        self.app = app
         self.calls = PyTgCalls(app)
         self._started = False
         self._fight_task = None
@@ -51,20 +54,25 @@ class VCBridge:
             return chat_id
 
     async def join_all(self):
-        """Join every group previously registered with /join, without audio."""
+        return await self.join_all_from_dialogs()
+
+    async def join_all_from_dialogs(self):
+        """Scan the session account's joined group dialogs and try each active VC."""
         async with self._lock:
             await self._ensure_started()
-            ids = list(state.joined_chat_ids)
-            if not ids:
-                return [], []
             ok, failed = [], []
-            for chat_id in ids:
+            async for dialog in self.app.get_dialogs():
+                chat = dialog.chat
+                if not chat or chat.type not in ("group", "supergroup"):
+                    continue
+                chat_id = chat.id
                 try:
                     await self.calls.play(chat_id, None)
+                    state.joined_chat_ids.add(chat_id)
                     ok.append(chat_id)
                 except Exception as exc:
                     failed.append((chat_id, exc))
-                    log.exception("Failed to join VC %s", chat_id)
+                    log.warning("Skipping VC %s: %s", chat_id, exc)
             if ok:
                 state.current_chat_id = ok[-1]
                 state.target_chat_id = ok[-1]
@@ -107,7 +115,7 @@ class VCBridge:
             if not target:
                 raise RuntimeError("No VC selected. Use /join <group_id> first.")
             if target not in state.joined_chat_ids:
-                raise RuntimeError("That group is not registered. Use /join <group_id> first.")
+                raise RuntimeError("That group is not currently joined. Use /join or /allvc join first.")
             if not os.path.exists(path):
                 raise FileNotFoundError(path)
 
